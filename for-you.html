@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>For You ❤️</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            background: linear-gradient(to right, #ff758c, #ff7eb3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', sans-serif;
+            color: white;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .card {
+            background: rgba(0,0,0,0.25);
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 400px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.3);
+            animation: fadeIn 2s;
+        }
+
+        h1 { margin-bottom: 15px; }
+        p { font-size: 18px; line-height: 1.5; }
+
+        button {
+            margin-top: 20px;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            background: white;
+            color: #ff4b7d;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            transform: scale(1.1);
+        }
+
+        .heart {
+            position: absolute;
+            color: rgba(255,255,255,0.6);
+            font-size: 20px;
+            animation: float 6s linear infinite;
+        }
+
+        @keyframes float {
+            from { transform: translateY(100vh); }
+            to { transform: translateY(-10vh); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="card" id="card">
+    <h1>Hey Love ❤️</h1>
+    <p>
+        I know you were hurt...
+        and I’m really sorry 😔
+        I may be bad at words,
+        but my heart only knows **you**.
+    </p>
+
+    <button onclick="forgive()">Tap if you forgive me 💖</button>
+</div>
+
+<script>
+    function forgive() {
+        document.getElementById("card").innerHTML = `
+            <h1>Thank You 😭❤️</h1>
+            <p>
+                I promise to protect your heart,<br>
+                not hurt it.<br><br>
+                You’re my favorite person,<br>
+                my peace, my home 🏡❤️<br>
+                Love you Sreeya darling 💖
+            </p>
+        `;
+    }
+
+    // floating hearts
+    setInterval(() => {
+        const heart = document.createElement("div");
+        heart.className = "heart";
+        heart.innerHTML = "❤️";
+        heart.style.left = Math.random() * 100 + "vw";
+        heart.style.fontSize = (Math.random() * 20 + 10) + "px";
+        document.body.appendChild(heart);
+        setTimeout(() => heart.remove(), 6000);
+    }, 300);
+</script>
+
+</body>
+</html>
