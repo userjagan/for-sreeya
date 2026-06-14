@@ -116,13 +116,14 @@
 
   /* VIDEO */
   .video-wrap {
-    width:100%; border-radius:16px;
+    width:100%; max-width:380px;
+    border-radius:16px;
     overflow:hidden;
     box-shadow: 0 0 60px var(--glow);
     opacity:0; animation: fadeUp 1s 0.3s forwards;
-    margin-bottom:60px;
+    margin: 0 auto 60px;
     background:#1a0a0e;
-    aspect-ratio: 16/9;
+    aspect-ratio: 9/16;
     position: relative;
   }
   .video-wrap video {
@@ -282,12 +283,10 @@
 
 <canvas id="hearts-canvas"></canvas>
 
-<!-- Hidden YouTube iframe for music -->
-<iframe id="yt-player"
-  src="about:blank"
-  allow="autoplay"
-  style="display:none; width:1px; height:1px;">
-</iframe>
+<!-- Hidden audio element for music (local file) -->
+<audio id="bg-music" loop preload="auto">
+  <source src="Ne Ne Nani Ne (PenduJatt.Com.Se).mp3" type="audio/mpeg">
+</audio>
 
 <!-- Music toggle button -->
 <button id="music-btn" onclick="toggleMusic()" title="Toggle music">🎵</button>
@@ -393,7 +392,7 @@
   <div class="final-sign">
     <span class="big-heart">💖</span>
     <p class="sign-name">Yours, forever</p>
-    <p class="sign-sub">— always, Pavan</p>
+    <p class="sign-sub">— always, Jagan</p>
   </div>
 
 </section>
@@ -433,19 +432,24 @@ drawHearts();
 
 // ── MUSIC ──
 let musicPlaying = false;
-const ytFrame = document.getElementById('yt-player');
+const bgMusic = document.getElementById('bg-music');
 const musicBtn = document.getElementById('music-btn');
 
 function startMusic() {
-  // Nene Nani Ne from Eega – autoplay via YouTube iframe API
-  ytFrame.src = 'https://www.youtube.com/embed/6X3bYD5p8Xw?autoplay=1&loop=1&playlist=6X3bYD5p8Xw&controls=0&mute=0&start=0';
-  musicPlaying = true;
-  musicBtn.textContent = '🔊';
+  bgMusic.volume = 0.6;
+  bgMusic.play().then(() => {
+    musicPlaying = true;
+    musicBtn.textContent = '🔊';
+  }).catch(() => {
+    // Autoplay blocked – wait for tap on music button
+    musicPlaying = false;
+    musicBtn.textContent = '🎵';
+  });
 }
 
 function toggleMusic() {
   if (musicPlaying) {
-    ytFrame.src = 'about:blank';
+    bgMusic.pause();
     musicPlaying = false;
     musicBtn.textContent = '🎵';
   } else {
@@ -465,47 +469,33 @@ function openApology() {
   setTimeout(observeBlocks, 300);
 }
 
-// ── LOAD VIDEO FROM GOOGLE PHOTOS ──
+// ── LOAD VIDEO (local file from repo) ──
 function loadVideo() {
   const container = document.getElementById('video-container');
   const fallback  = document.getElementById('video-fallback');
 
-  // Try embedding Google Photos shared album as iframe
-  const photoUrl = 'https://photos.google.com/share/AF1QipNcVXVbKTwkcnBhYVksbqMhOv0Ev9MITdKDadweka4iGlqC7kBxdZ5XqTojuFYoZg?key=eGpOWTJYaXB1M3JfYmtHUzJ3YWdJejlqNFJqLVBB';
+  const videoSrc = 'VID-20260503-WA0001.mp4';
 
-  // Try direct video from og:video meta
-  const videoSrc = 'https://lh3.googleusercontent.com/pw/AP1GczMIwEq6moRs4Ac3hx52PVVyAvtOUlD2wIxuhoy22UYvpo3u8V8Nekz0vQxzzKPfNGnvGzdg94N9w3SDxY-rK6xSNNlvDk9k6mJkJpTnrX5d7RygQws=w478-h315-k-no-m18';
-
-  // Try video element first
   const vid = document.createElement('video');
   vid.src = videoSrc;
   vid.controls = true;
   vid.autoplay = false;
   vid.playsInline = true;
+  vid.loop = true;
   vid.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
 
-  vid.onloadedmetadata = () => {
+  vid.onloadeddata = () => {
     fallback.remove();
     container.appendChild(vid);
   };
 
   vid.onerror = () => {
-    // Fallback: show photo from album
-    const img = document.createElement('img');
-    img.src = 'https://lh3.googleusercontent.com/pw/AP1GczMIwEq6moRs4Ac3hx52PVVyAvtOUlD2wIxuhoy22UYvpo3u8V8Nekz0vQxzzKPfNGnvGzdg94N9w3SDxY-rK6xSNNlvDk9k6mJkJpTnrX5d7RygQws=w1200';
-    img.alt = 'Us';
-    img.style.cssText = 'width:100%;display:block;';
-    img.onload = () => { fallback.remove(); container.appendChild(img); };
-    img.onerror = () => {
-      // Final fallback – beautiful text
-      fallback.innerHTML = `
-        <div class="vf-icon">💑</div>
-        <p><em>"Every moment with you<br>lives in my heart forever."</em></p>
-      `;
-    };
+    fallback.innerHTML = `
+      <div class="vf-icon">💑</div>
+      <p><em>"Every moment with you<br>lives in my heart forever."</em></p>
+    `;
   };
 
-  // Trigger load attempt
   vid.load();
 }
 
