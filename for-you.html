@@ -1,106 +1,488 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>For You ❤️</title>
-    <style>
-        body {
-            margin: 0;
-            height: 100vh;
-            background: linear-gradient(to right, #ff758c, #ff7eb3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Segoe UI', sans-serif;
-            color: white;
-            text-align: center;
-            overflow: hidden;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For You, Sreeya 💖</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        .card {
-            background: rgba(0,0,0,0.25);
-            padding: 40px;
-            border-radius: 20px;
-            max-width: 400px;
-            box-shadow: 0 0 30px rgba(0,0,0,0.3);
-            animation: fadeIn 2s;
-        }
+  :root {
+    --rose:    #c8637a;
+    --blush:   #f2c4ce;
+    --deep:    #1a0a0e;
+    --cream:   #fdf6f0;
+    --muted:   rgba(255,255,255,0.55);
+    --glow:    rgba(200, 99, 122, 0.35);
+  }
 
-        h1 { margin-bottom: 15px; }
-        p { font-size: 18px; line-height: 1.5; }
+  html { scroll-behavior: smooth; }
 
-        button {
-            margin-top: 20px;
-            padding: 12px 25px;
-            border: none;
-            border-radius: 25px;
-            background: white;
-            color: #ff4b7d;
-            font-size: 16px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        button:hover {
-            transform: scale(1.1);
-        }
+  body {
+    background: var(--deep);
+    color: var(--cream);
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
 
-        .heart {
-            position: absolute;
-            color: rgba(255,255,255,0.6);
-            font-size: 20px;
-            animation: float 6s linear infinite;
-        }
+  /* ── CANVAS HEARTS ── */
+  #hearts-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.35;
+  }
 
-        @keyframes float {
-            from { transform: translateY(100vh); }
-            to { transform: translateY(-10vh); }
-        }
+  /* ── SCREEN 1 – LANDING ── */
+  #screen-landing {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 24px;
+  }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.8); }
-            to { opacity: 1; transform: scale(1); }
-        }
-    </style>
+  .eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--rose);
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeUp 1s 0.3s forwards;
+  }
+
+  .title-main {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(52px, 12vw, 96px);
+    font-weight: 300;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    opacity: 0;
+    animation: fadeUp 1.2s 0.6s forwards;
+  }
+
+  .title-main em {
+    font-style: italic;
+    color: var(--blush);
+  }
+
+  .subtitle {
+    margin-top: 20px;
+    font-size: clamp(15px, 3vw, 18px);
+    color: var(--muted);
+    line-height: 1.7;
+    max-width: 360px;
+    opacity: 0;
+    animation: fadeUp 1.2s 1s forwards;
+  }
+
+  .pulse-ring {
+    margin-top: 56px;
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    background: var(--rose);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+    cursor: pointer;
+    opacity: 0;
+    animation: fadeUp 1s 1.4s forwards, pulse 2s 2.4s infinite;
+    box-shadow: 0 0 0 0 var(--glow);
+    border: none;
+    transition: transform 0.2s;
+  }
+  .pulse-ring:hover { transform: scale(1.1); }
+
+  .tap-hint {
+    margin-top: 14px;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    opacity: 0;
+    animation: fadeUp 1s 1.8s forwards;
+  }
+
+  /* ── SCREEN 2 – APOLOGY ── */
+  #screen-apology {
+    position: relative;
+    z-index: 1;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    padding: 60px 24px 80px;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  #screen-apology.visible { display: flex; }
+
+  .section-label {
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--rose);
+    margin-bottom: 48px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.1s forwards;
+  }
+
+  /* video */
+  .video-wrap {
+    width: 100%;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 0 60px var(--glow);
+    opacity: 0;
+    animation: fadeUp 1s 0.3s forwards;
+    margin-bottom: 60px;
+    background: #0d0408;
+  }
+
+  .video-wrap video,
+  .video-wrap iframe {
+    width: 100%;
+    display: block;
+    max-height: 460px;
+    object-fit: cover;
+  }
+
+  /* photo fallback */
+  .photo-wrap {
+    width: 100%;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 0 60px var(--glow);
+    opacity: 0;
+    animation: fadeUp 1s 0.3s forwards;
+    margin-bottom: 60px;
+  }
+  .photo-wrap img { width: 100%; display: block; }
+
+  /* message blocks */
+  .msg-block {
+    width: 100%;
+    margin-bottom: 48px;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s, transform 0.8s;
+  }
+  .msg-block.visible { opacity: 1; transform: translateY(0); }
+
+  .msg-block .label {
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    color: var(--rose);
+    margin-bottom: 14px;
+    text-transform: uppercase;
+  }
+
+  .msg-block p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(22px, 5vw, 32px);
+    font-weight: 300;
+    line-height: 1.65;
+    color: var(--cream);
+  }
+
+  .msg-block p em {
+    font-style: italic;
+    color: var(--blush);
+  }
+
+  .msg-block p strong {
+    font-weight: 400;
+    color: white;
+  }
+
+  /* divider */
+  .divider {
+    width: 1px;
+    height: 60px;
+    background: linear-gradient(to bottom, transparent, var(--rose), transparent);
+    margin: 8px auto 48px;
+    opacity: 0;
+    animation: fadeIn 1s 0.5s forwards;
+  }
+
+  /* promise card */
+  .promise-card {
+    width: 100%;
+    border: 1px solid rgba(200,99,122,0.3);
+    border-radius: 16px;
+    padding: 40px 32px;
+    background: rgba(200,99,122,0.05);
+    text-align: center;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s, transform 0.8s;
+    margin-bottom: 56px;
+  }
+  .promise-card.visible { opacity: 1; transform: translateY(0); }
+
+  .promise-card .promise-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(28px, 6vw, 42px);
+    font-style: italic;
+    color: var(--blush);
+    margin-bottom: 20px;
+  }
+
+  .promise-card .promise-text {
+    font-size: 15px;
+    line-height: 1.9;
+    color: rgba(255,255,255,0.75);
+  }
+
+  /* ISKCON memory */
+  .memory-card {
+    width: 100%;
+    border-radius: 16px;
+    padding: 36px 32px;
+    background: linear-gradient(135deg, rgba(200,99,122,0.12), rgba(242,196,206,0.06));
+    border: 1px solid rgba(242,196,206,0.15);
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s, transform 0.8s;
+    margin-bottom: 56px;
+  }
+  .memory-card.visible { opacity: 1; transform: translateY(0); }
+
+  .memory-card .mem-icon { font-size: 36px; margin-bottom: 16px; }
+
+  .memory-card .mem-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(18px, 4vw, 24px);
+    font-style: italic;
+    line-height: 1.7;
+    color: rgba(255,255,255,0.85);
+  }
+
+  /* final sign */
+  .final-sign {
+    text-align: center;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 1s, transform 1s;
+    margin-top: 20px;
+  }
+  .final-sign.visible { opacity: 1; transform: translateY(0); }
+
+  .final-sign .big-heart { font-size: 52px; display: block; margin-bottom: 16px; }
+
+  .final-sign .sign-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(28px, 7vw, 44px);
+    font-style: italic;
+    color: var(--blush);
+  }
+
+  .final-sign .sign-sub {
+    margin-top: 10px;
+    font-size: 13px;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  @keyframes pulse {
+    0%   { box-shadow: 0 0 0 0 var(--glow); }
+    70%  { box-shadow: 0 0 0 18px rgba(200,99,122,0); }
+    100% { box-shadow: 0 0 0 0 rgba(200,99,122,0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+</style>
 </head>
 <body>
 
-<div class="card" id="card">
-    <h1>Hey Love ❤️</h1>
-    <p>
-        I know you were hurt...
-        and I’m really sorry 😔
-        I may be bad at words,
-        but my heart only knows **you**.
-    </p>
+<canvas id="hearts-canvas"></canvas>
 
-    <button onclick="forgive()">Tap if you forgive me 💖</button>
-</div>
+<!-- ══════════ SCREEN 1 ══════════ -->
+<section id="screen-landing">
+  <p class="eyebrow">A message from the heart</p>
+  <h1 class="title-main">For you,<br><em>Sreeya</em></h1>
+  <p class="subtitle">I know I hurt you deeply. I know sorry doesn't undo it. But I need you to feel what's truly in my heart.</p>
+  <button class="pulse-ring" onclick="openApology()" aria-label="Open message">💖</button>
+  <p class="tap-hint">tap to open</p>
+</section>
+
+<!-- ══════════ SCREEN 2 ══════════ -->
+<section id="screen-apology">
+
+  <p class="section-label">My heart, for you</p>
+
+  <!-- MEDIA — Google Photos embed -->
+  <div class="photo-wrap">
+    <img
+      src="https://lh3.googleusercontent.com/pw/AP1GczMwoh5tzhGBAwD7Rzu6xs9DGXGyYc3D6ZlJIzIOraL5DvFg1T91d9OlNkQmDjFI03vmfaYSCVoW-5KWpH1c6cmcg5hqzZEDbPraauFLFMVldLWwuX4=w1200"
+      alt="Us"
+      onerror="this.parentElement.style.display='none'"
+    />
+  </div>
+
+  <!-- MSG 1 -->
+  <div class="msg-block">
+    <p class="label">I'm sorry</p>
+    <p>
+      Amma buji thalli…<br>
+      I hurt you. And I hate myself for it.<br>
+      You did nothing wrong. <em>Nothing.</em><br>
+      I was wrong, and I carry that.
+    </p>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- MSG 2 — what he loves -->
+  <div class="msg-block">
+    <p class="label">What I see in you</p>
+    <p>
+      The way you understand things — <em>deeply, quietly, clearly</em> —<br>
+      without needing everything explained.<br>
+      In a world full of noise,<br>
+      you are the only one who <strong>truly sees</strong>.
+    </p>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ISKCON MEMORY -->
+  <div class="memory-card">
+    <div class="mem-icon">🛕</div>
+    <p class="mem-text">
+      "That day at ISKCON temple…<br>
+      standing next to you,<br>
+      I felt like I was exactly<br>
+      where I was supposed to be.<br>
+      That peace — <em>that was you.</em>"
+    </p>
+  </div>
+
+  <!-- MSG 3 -->
+  <div class="msg-block">
+    <p class="label">The truth</p>
+    <p>
+      You are not just someone I love.<br>
+      You are my <em>home</em>.<br>
+      My calm. My clarity.<br>
+      The person who makes me want to<br>
+      <strong>be better every single day.</strong>
+    </p>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- PROMISE CARD -->
+  <div class="promise-card">
+    <p class="promise-title">My promise to you</p>
+    <p class="promise-text">
+      I will never hurt you again.<br>
+      Not because I have to say it —<br>
+      but because <strong>you deserve someone who protects your heart</strong>,<br>
+      not breaks it.<br><br>
+      I choose to be that person for you.<br>
+      Every day. No matter what.<br><br>
+      <em>I love you, Sreeya. More than words can hold.</em>
+    </p>
+  </div>
+
+  <!-- FINAL SIGN -->
+  <div class="final-sign">
+    <span class="big-heart">💖</span>
+    <p class="sign-name">Yours, always</p>
+    <p class="sign-sub">— Pavan</p>
+  </div>
+
+</section>
 
 <script>
-    function forgive() {
-        document.getElementById("card").innerHTML = `
-            <h1>Thank You 😭❤️</h1>
-            <p>
-                I promise to protect your heart,<br>
-                not hurt it.<br><br>
-                You’re my favorite person,<br>
-                my peace, my home 🏡❤️<br>
-                Love you Sreeya darling 💖
-            </p>
-        `;
-    }
+// ── FLOATING HEARTS CANVAS ──
+const canvas = document.getElementById('hearts-canvas');
+const ctx = canvas.getContext('2d');
+let hearts = [];
 
-    // floating hearts
-    setInterval(() => {
-        const heart = document.createElement("div");
-        heart.className = "heart";
-        heart.innerHTML = "❤️";
-        heart.style.left = Math.random() * 100 + "vw";
-        heart.style.fontSize = (Math.random() * 20 + 10) + "px";
-        document.body.appendChild(heart);
-        setTimeout(() => heart.remove(), 6000);
-    }, 300);
+function resize() {
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+function spawnHeart() {
+  hearts.push({
+    x: Math.random() * canvas.width,
+    y: canvas.height + 20,
+    size: Math.random() * 14 + 8,
+    speed: Math.random() * 0.6 + 0.3,
+    opacity: Math.random() * 0.5 + 0.2,
+    drift: (Math.random() - 0.5) * 0.4,
+    emoji: Math.random() > 0.5 ? '❤️' : '🤍'
+  });
+}
+
+function drawHearts() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  hearts = hearts.filter(h => h.y > -30);
+  hearts.forEach(h => {
+    h.y -= h.speed;
+    h.x += h.drift;
+    ctx.globalAlpha = h.opacity;
+    ctx.font = `${h.size}px serif`;
+    ctx.fillText(h.emoji, h.x, h.y);
+  });
+  ctx.globalAlpha = 1;
+  requestAnimationFrame(drawHearts);
+}
+
+setInterval(spawnHeart, 600);
+drawHearts();
+
+// ── OPEN APOLOGY SCREEN ──
+function openApology() {
+  document.getElementById('screen-landing').style.display = 'none';
+  const apology = document.getElementById('screen-apology');
+  apology.classList.add('visible');
+  window.scrollTo(0, 0);
+  setTimeout(observeBlocks, 300);
+}
+
+// ── SCROLL REVEAL ──
+function observeBlocks() {
+  const blocks = document.querySelectorAll('.msg-block, .promise-card, .memory-card, .final-sign');
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.2 });
+  blocks.forEach(b => obs.observe(b));
+  // trigger first visible ones immediately
+  blocks.forEach(b => {
+    const rect = b.getBoundingClientRect();
+    if (rect.top < window.innerHeight) b.classList.add('visible');
+  });
+}
 </script>
-
 </body>
 </html>
